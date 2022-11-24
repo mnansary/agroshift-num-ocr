@@ -9,10 +9,8 @@ import os
 import cv2
 import numpy as np
 import random
-import pandas as pd 
 from tqdm import tqdm
 from .utils import padToHeight,LOG_INFO,random_exec,create_dir,paper_noise
-from .dataset import DataSet
 tqdm.pandas()
 #--------------------
 # helpers
@@ -57,50 +55,24 @@ def createImgFromComps(df,comps):
 #--------------------
 # ops
 #--------------------
-def createSyntheticData(iden,
-                        save_dir,
-                        data_dir,
-                        dict_csv):
-    '''
-        creates: 
-            * handwriten word image
-            * a dataframe/csv that holds word level groundtruth    
-    '''
-    #---------------
-    # processing
-    #---------------
-    save_dir=create_dir(save_dir,iden)
-    LOG_INFO(save_dir)
-    # save_paths
-    class save:    
-        img=create_dir(save_dir,"images")
-        csv=os.path.join(save_dir,"data.csv")
-        txt=os.path.join(save_dir,"data.txt")
-    
-    ds=DataSet(data_dir)
-    dictionary=pd.read_csv(dict_csv)
+def createSyntheticData(save,
+                        comp_df,
+                        dictionary,
+                        fiden=0):
     # dataframe vars
-    filepaths=[]
-    fiden=0
-    # loop
     for idx in tqdm(range(len(dictionary))):
         try:
             text=dictionary.iloc[idx,0]
+            dtype=dictionary.iloc[idx,1]
             # image
-            img=createImgFromComps(df=ds.df,comps=list(text))
+            img=createImgFromComps(df=comp_df,comps=list(text))
             img=255-img
             img=paper_noise(img)
             # save
             fname=f"{fiden}.png"
             cv2.imwrite(os.path.join(save.img,fname),img)
-            filepaths.append(os.path.join(save.img,fname))
             fiden+=1
             with open(save.txt,"a+") as f:
-                f.write(f"{os.path.join(save.img,fname)}\t{text}\n")
+                f.write(f"{os.path.join(save.img,fname)}\t{text}\t{dtype}\n")
         except Exception as e:
            LOG_INFO(e)
-    df=dictionary.copy()
-    df["word"]=df["text"]
-    df["filepath"]=filepaths
-    df=df[["filepath","word","dtype"]]
-    df.to_csv(os.path.join(save.csv),index=False)
