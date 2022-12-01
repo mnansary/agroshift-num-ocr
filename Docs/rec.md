@@ -51,13 +51,13 @@
     * does not work with direct handwritten images
     * not end-to-end (needs an intermediary modifier model)
 
-## **DataSet**:
+# **DataSet**: (Synthetic)
 
-* synthetic samples:
+### synthetic samples:
 
 ![](https://github.com/mnansary/agroshift-num-ocr/blob/main/Docs/srcs/synth.png?raw=true)
 
-* Data Distribution:
+### Data Distribution:
 
 |Feature|Description|ROI|
 |:--:|:---:|:---:|
@@ -66,9 +66,35 @@
 |NUM_IDX=600K| <ul><li>Synthetic ID Images</li><li>Bangla:English ratio 35:65</li><li> fixed length 4,5,6,7 (randomchoice)</li>|Worker_ID<br />Sup_Id|
 |NUM_TOT=200k| <ul><li>Synthetic Total Value Images</li><li>Bangla:English ratio 70:30</li><li> fixed length 3,4 (randomchoice)</li>|TOV_worker|
 
-* Data Specification:
+### Data Specification:
 
 |Feature|Description|Comment|
 |:--:|:---:|:---:|
-|resizeToHeight|70%<br /> ![](https://github.com/mnansary/agroshift-num-ocr/blob/main/Docs/srcs/6.png?raw=true)|ad:Forced alignment <br /> dis: ratio of 0 to other numbers mismatch|
-|padToHeight|30%<br /> ![](https://github.com/mnansary/agroshift-num-ocr/blob/main/Docs/srcs/6.png?raw=true)|ad:natural alignment <br /> dis:high distortion|
+|resizeToHeight|Population:70%<br /> ![](https://github.com/mnansary/agroshift-num-ocr/blob/main/Docs/srcs/6.png?raw=true)|adv:Forced alignment <br /> dis-adv: ratio of 0 to other numbers mismatch|
+|padToHeight|Population:30%<br /> ![](https://github.com/mnansary/agroshift-num-ocr/blob/main/Docs/srcs/7.png?raw=true)|adv:natural alignment <br /> dis-adv:high distortion|
+|paper noise|Paper Noise: No-noise ratio 75:25 <br /> noise types: <br /> quasicrystal <br /> ![](https://github.com/Belval/TextRecognitionDataGenerator/blob/master/samples/17.jpg?raw=true) <br />gaussian_noise <br /> ![](https://raw.githubusercontent.com/Belval/TextRecognitionDataGenerator/master/samples/15.jpg?raw=true)|adv:texture distortion handling|
+|mono-background| rgb range (0-25,0-25,0-25)|adv:color distortion handling|
+|GaussianBlur|3x3 Kernel blurwith 70:30 probability<br /> ![](https://github.com/Belval/TextRecognitionDataGenerator/blob/master/samples/12.jpg?raw=true) <br />  ![](https://github.com/Belval/TextRecognitionDataGenerator/blob/master/samples/13.jpg?raw=true)|adv:contrast distortion handling|
+
+### **Natural Images**:
+
+![](https://github.com/mnansary/agroshift-num-ocr/blob/main/Docs/srcs/natural.png?raw=true)
+
+
+### **Improvements**:
+- [ ] Box-Creation around images to account for box cuts
+- [ ] add pixel removal to create fade-way written effects
+- [ ] effects of post-processing
+- [ ] Deep Learning Based generation : Time consuming (XXXX)
+
+### **WorkFlow**:
+
+|Task|Description|
+|:--:|:---:|
+|Create Synthetic Images| Time Execution:~2.5 days <br /> Space: ~16 GB|
+|Create TFRecords| Time Execution: ~8 hours <br /> Space: ~16 GB|
+|TFRecords Upload To Kaggle| Time Execution: ~3 hours|
+|Training With Kaggle TPU| Time Execution: ~1 Day (25 epoch-9 hour limit)|
+
+
+
