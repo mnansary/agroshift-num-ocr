@@ -49,4 +49,4 @@
 
 * synthetic samples:
 
-![](/srcs/synth.png?raw=true)
+![](https://github.com/mnansary/agroshift-num-ocr/blob/main/Docs/srcs/synth.png?raw=true)
